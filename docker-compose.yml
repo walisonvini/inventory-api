@@ -1,0 +1,38 @@
+services:
+  app:
+    build: .
+    container_name: phalcon_app
+    volumes:
+      - ./:/var/www/html
+    user: "${UID}:${GID}"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_NAME: inventory
+      DB_USER: root
+      DB_PASS: root
+    networks:
+      - inventory_network
+
+  db:
+    image: mysql:8.0
+    container_name: inventory_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: inventory
+    ports:
+      - "3306:3306"
+    networks:
+      - inventory_network
+    volumes:
+      - db_data:/var/lib/mysql
+
+networks:
+  inventory_network:
+    driver: bridge
+
+volumes:
+  db_data:
