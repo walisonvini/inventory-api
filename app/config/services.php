@@ -120,3 +120,7 @@ $di->setShared('session', function () {
 
     return $session;
 });
+
+$di->setShared('productService', function() {
+    return new \App\Services\ProductService();
+});

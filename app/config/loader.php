@@ -2,12 +2,17 @@
 
 $loader = new \Phalcon\Autoload\Loader();
 
-/**
- * We're a registering a set of directories taken from the configuration file
- */
+$loader->setNamespaces(
+    [
+       'App\Traits'        => APP_PATH . '/traits',
+       'App\Services'      => APP_PATH . '/services',
+       'App\Models'        => $config->application->modelsDir,
+    ]
+)->register();
+
 $loader->setDirectories(
     [
         $config->application->controllersDir,
-        $config->application->modelsDir
+        $config->application->modelsDir,
     ]
 )->register();
