@@ -7,9 +7,18 @@ use Phalcon\Http\Response;
 
 trait ApiResponse
 {
+    protected function getResponse(): Response
+    {
+        if (property_exists($this, 'response') && $this->response instanceof Response) {
+            return $this->response;
+        }
+        
+        return new Response();
+    }
+
     public function successResponse($data, string $message = 'Operation performed successfully', int $code = 200): Response
     {
-        return $this->response
+        return $this->getResponse()
             ->setStatusCode($code)
             ->setJsonContent([
                 'success' => true,
@@ -29,7 +38,7 @@ trait ApiResponse
             $responseData['errors'] = $errors;
         }
 
-        return $this->response
+        return $this->getResponse()
             ->setStatusCode($code)
             ->setJsonContent($responseData);
     }

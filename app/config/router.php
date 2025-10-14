@@ -7,12 +7,19 @@ $router = $di->getRouter();
 $group = new Group();
 
 $group->setPrefix('/api');
+
+
 $group->addGet('/products', [
     'controller' => 'product',
     'action' => 'index'
 ]);
-$router->mount($group);
 
+$group->addPost('/products', [
+    'controller' => 'product',
+    'action'=> 'create'
+]);
+
+$router->mount($group);
 
 // Define routes
 

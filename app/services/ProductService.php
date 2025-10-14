@@ -11,4 +11,15 @@ class ProductService
     {
         return Products::find()->toArray();
     }
+
+    public function create(array $data): Products
+    {
+        $product = new Products();
+        $product->assign($data, ['name', 'sku', 'price', 'stock', 'description']);
+        $product->save();
+
+        $product->refresh();
+
+        return $product;
+    }
 }

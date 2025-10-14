@@ -3,6 +3,9 @@ declare(strict_types=1);
 
 use Phalcon\Di\FactoryDefault;
 
+use App\Exceptions\ValidatorException;
+use App\Traits\ApiResponse;
+
 error_reporting(E_ALL);
 
 define('BASE_PATH', dirname(__DIR__));
@@ -45,6 +48,9 @@ try {
     error_reporting(E_ALL);
 
     echo $application->handle($_SERVER['REQUEST_URI'])->getContent();
+} catch (ValidatorException $e) {
+    $errors = json_decode($e->getMessage(), true);
+    echo (new class { use ApiResponse; })->errorResponse('Validation failed', $e->getCode(), $errors)->getContent();
 } catch (\Exception $e) {
     echo $e->getMessage() . '<br>';
     echo '<pre>' . $e->getTraceAsString() . '</pre>';

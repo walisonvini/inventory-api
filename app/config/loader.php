@@ -7,6 +7,8 @@ $loader->setNamespaces(
        'App\Traits'        => APP_PATH . '/traits',
        'App\Services'      => APP_PATH . '/services',
        'App\Models'        => $config->application->modelsDir,
+       'App\Validators'    => APP_PATH . '/validators',
+       'App\Exceptions'    => APP_PATH . '/exceptions',
     ]
 )->register();
 
