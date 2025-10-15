@@ -4,6 +4,7 @@ declare(strict_types=1);
 use Phalcon\Di\FactoryDefault;
 
 use App\Exceptions\ValidatorException;
+use App\Exceptions\ModelNotFoundException;
 use App\Traits\ApiResponse;
 
 error_reporting(E_ALL);
@@ -51,6 +52,8 @@ try {
 } catch (ValidatorException $e) {
     $errors = json_decode($e->getMessage(), true);
     echo (new class { use ApiResponse; })->errorResponse('Validation failed', $e->getCode(), $errors)->getContent();
+} catch (ModelNotFoundException $e) {
+    echo (new class { use ApiResponse; })->errorResponse($e->getMessage(), $e->getCode())->getContent();
 } catch (\Exception $e) {
     echo $e->getMessage() . '<br>';
     echo '<pre>' . $e->getTraceAsString() . '</pre>';

@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Validators;
+namespace App\Validators\Products;
+
+use App\Validators\BaseValidator;
 
 use Phalcon\Filter\Validation\Validator\Numericality;
 use Phalcon\Filter\Validation\Validator\PresenceOf;
@@ -9,7 +11,7 @@ use Phalcon\Filter\Validation\Validator\StringLength\Max;
 
 use App\Models\Products;
 
-class ProductValidator extends BaseValidator
+class SaveProductValidator extends BaseValidator
 {
     public function initialize()
     {

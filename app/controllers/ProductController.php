@@ -9,7 +9,8 @@ use App\Traits\ApiResponse;
 
 use App\Services\ProductService;
 
-use App\Validators\ProductValidator;
+use App\Validators\Products\SaveProductValidator;
+use App\Validators\Products\UpdateProductValidator;
 
 class ProductController extends Controller
 {
@@ -21,23 +22,32 @@ class ProductController extends Controller
     {
         $this->productService = new ProductService();
     }
+    
     public function indexAction(): Response
     {
         $products = $this->productService->all();
 
-        return $this->successResponse(
-            [
-                'products' => $products
-            ],
-            'Products fetched successfully'
+        return $this->successResponse(['products' => $products],
+            'Products fetched successfully',
+            200
         );
     }
 
-    public function createAction(): Response
+    public function showAction(int $id): Response
+    {
+        $product = $this->productService->find($id);
+
+        return $this->successResponse(['product' => $product],
+            'Product fetched successfully',
+            200
+        );
+    }
+
+    public function saveAction(): Response
     {
         $requestData = $this->request->getJsonRawBody(true);
 
-        $validator = new ProductValidator();
+        $validator = new SaveProductValidator();
         $validator->validateData($requestData);
 
         $product = $this->productService->create($requestData);
@@ -46,6 +56,32 @@ class ProductController extends Controller
             ['product' => $product],
             'Product created successfully',
             201
+        );
+    }
+
+    public function updateAction(int $id): Response
+    {
+        $requestData = $this->request->getJsonRawBody(true);
+
+        $validator = new UpdateProductValidator();
+        $validator->validateData($requestData);
+
+        $product = $this->productService->update($id, $requestData);
+
+        return $this->successResponse(
+            ['product' => $product],
+            'Product updated successfully',
+            200
+        );
+    }
+
+    public function deleteAction(int $id): Response
+    {
+        $this->productService->delete($id);
+
+        return $this->successResponse(null,
+            'Product deleted successfully',
+            200
         );
     }
 }

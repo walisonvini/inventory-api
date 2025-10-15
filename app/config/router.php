@@ -14,10 +14,26 @@ $group->addGet('/products', [
     'action' => 'index'
 ]);
 
+$group->addGet('/products/{id:[0-9]+}', [
+    'controller' => 'product',
+    'action' => 'show'
+]);
+
 $group->addPost('/products', [
     'controller' => 'product',
-    'action'=> 'create'
+    'action'=> 'save'
 ]);
+
+$group->addPut('/products/{id:[0-9]+}', [
+    'controller' => 'product',
+    'action'=> 'update'
+]);
+
+$group->addDelete('/products/{id:[0-9]+}', [
+    'controller' => 'product',
+    'action'=> 'delete'
+]);
+
 
 $router->mount($group);
 
