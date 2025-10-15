@@ -4,40 +4,13 @@ use Phalcon\Mvc\Router\Group;
 
 $router = $di->getRouter();
 
-$group = new Group();
+$apiGroup = new Group();
+$apiGroup->setPrefix('/api');
 
-$group->setPrefix('/api');
-
-
-$group->addGet('/products', [
-    'controller' => 'product',
-    'action' => 'index'
-]);
-
-$group->addGet('/products/{id:[0-9]+}', [
-    'controller' => 'product',
-    'action' => 'show'
-]);
-
-$group->addPost('/products', [
-    'controller' => 'product',
-    'action'=> 'save'
-]);
-
-$group->addPut('/products/{id:[0-9]+}', [
-    'controller' => 'product',
-    'action'=> 'update'
-]);
-
-$group->addDelete('/products/{id:[0-9]+}', [
-    'controller' => 'product',
-    'action'=> 'delete'
-]);
+// Include routes
+include __DIR__ . '/../routes/products.php';
 
 
-$router->mount($group);
+$router->mount($apiGroup);
 
-// Define routes
-
-// Handle the request
 $router->handle($_SERVER['REQUEST_URI']);
