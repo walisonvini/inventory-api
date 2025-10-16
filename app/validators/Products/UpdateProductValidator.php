@@ -14,14 +14,47 @@ class UpdateProductValidator extends BaseValidator
 {
     public function initialize()
     {
-        $this->add('name', new Max(['max' => 255, 'message' => ':field must be at most 255 characters']));
-        
-        $this->add('sku', new Uniqueness(['model' => new Products(), 'message' => ':field must be unique']));
+        $this->add(
+            'name',
+            new Max([
+                'max' => 255,
+                'message' => 'Name must not exceed 255 characters',
+                'allowEmpty' => true,
+            ])
+        );
 
-        $this->add('sku', new Max(['max' => 100, 'message' => ':field must be at most 100 characters']));
+        $this->add(
+            'sku',
+            new Uniqueness([
+                'model' => new Products(),
+                'message' => 'This SKU is already in use',
+                'allowEmpty' => true,
+            ])
+        );
 
-        $this->add('price', new Numericality(['message' => ':field must be a numeric value']));
+        $this->add(
+            'sku',
+            new Max([
+                'max' => 100,
+                'message' => 'SKU must not exceed 100 characters',
+                'allowEmpty' => true,
+            ])
+        );
 
-        $this->add('stock', new Numericality(['message' => ':field must be a numeric value']));
+        $this->add(
+            'price',
+            new Numericality([
+                'message' => 'Price must be a numeric value',
+                'allowEmpty' => true,
+            ])
+        );
+
+        $this->add(
+            'stock',
+            new Numericality([
+                'message' => 'Stock must be a numeric value',
+                'allowEmpty' => true,
+            ])
+        );
     }
 }

@@ -6,7 +6,6 @@ namespace App\Services;
 use App\Models\Products;
 
 use App\Exceptions\ModelNotFoundException;
-use App\Exceptions\ValidatorException;
 
 class ProductService
 {

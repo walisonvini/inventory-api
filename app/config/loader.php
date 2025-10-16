@@ -19,3 +19,4 @@ $loader->setDirectories(
         $config->application->modelsDir,
     ]
 )->register();
+

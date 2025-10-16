@@ -9,6 +9,7 @@ $apiGroup->setPrefix('/api');
 
 // Include routes
 include __DIR__ . '/../routes/products.php';
+include __DIR__ . '/../routes/clients.php';
 
 
 $router->mount($apiGroup);
