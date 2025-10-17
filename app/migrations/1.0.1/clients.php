@@ -81,7 +81,7 @@ class ClientsMigration_101 extends Migration
                     'updated_at',
                     [
                         'type' => Column::TYPE_TIMESTAMP,
-                        'default' => "CURRENT_TIMESTAMP DEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+                        'default' => "CURRENT_TIMESTAMP",
                         'notNull' => false,
                         'after' => 'created_at'
                     ]

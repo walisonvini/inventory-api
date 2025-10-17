@@ -47,7 +47,7 @@ class ClientAddressesMigration_101 extends Migration
                     [
                         'type' => Column::TYPE_ENUM,
                         'notNull' => true,
-                        'size' => "'shipping','billing'",
+                        'size' => "'delivery','billing'",
                         'after' => 'client_id'
                     ]
                 ),
@@ -128,7 +128,7 @@ class ClientAddressesMigration_101 extends Migration
                     'updated_at',
                     [
                         'type' => Column::TYPE_TIMESTAMP,
-                        'default' => "CURRENT_TIMESTAMP DEFAULT_GENERATED on update CURRENT_TIMESTAMP",
+                        'default' => "CURRENT_TIMESTAMP",
                         'notNull' => false,
                         'after' => 'created_at'
                     ]

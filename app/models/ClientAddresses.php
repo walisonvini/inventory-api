@@ -86,7 +86,13 @@ class ClientAddresses extends \Phalcon\Mvc\Model
     {
         $this->setSchema("inventory");
         $this->setSource("client_addresses");
-        $this->belongsTo('client_id', '\Clients', 'id', ['alias' => 'Clients']);
+        
+        $this->belongsTo(
+            'client_id',
+            \App\Models\Clients::class,
+            'id',
+            ['alias' => 'client']
+        );
     }
 
     /**

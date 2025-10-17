@@ -55,7 +55,16 @@ class Clients extends \Phalcon\Mvc\Model
     {
         $this->setSchema("inventory");
         $this->setSource("clients");
-        $this->hasMany('id', 'ClientAddresses', 'client_id', ['alias' => 'ClientAddresses']);
+        
+        $this->hasMany(
+            'id',
+            ClientAddresses::class,
+            'client_id',
+            [
+                'reusable' => true,
+                'alias' => 'addresses'
+            ]
+        );
     }
 
     /**

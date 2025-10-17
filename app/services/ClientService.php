@@ -16,9 +16,14 @@ class ClientService
 
     public function find(int $id): Clients
     {
-        $client = Clients::findFirst($id);
+        $client = Clients::findFirst([
+            'conditions' => 'id = :id:',
+            'bind'       => [
+                'id' => $id,
+            ],
+        ]);
 
-        if (!$client) {
+        if(!$client) {
             throw new ModelNotFoundException('Client not found');
         }
 
