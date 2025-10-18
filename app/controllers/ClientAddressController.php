@@ -8,6 +8,8 @@ use Phalcon\Http\Response;
 use App\Services\ClientService;
 use App\Services\ClientAddressService;
 
+use App\Validators\ClientAddresses\UpsertClientAddress;
+
 use App\Traits\ApiResponse;
 
 class ClientAddressController extends \Phalcon\Mvc\Controller
@@ -37,6 +39,9 @@ class ClientAddressController extends \Phalcon\Mvc\Controller
     public function upsertAction(int $client_id): Response
     {
         $requestData = $this->request->getJsonRawBody(true);
+
+        $validator = new UpsertClientAddress();
+        $validator->validateData($requestData);
 
         $address = $this->clientAddressService->upsert($client_id, $requestData);
 
