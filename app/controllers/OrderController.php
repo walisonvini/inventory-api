@@ -6,6 +6,7 @@ namespace App\Controllers;
 use Phalcon\Http\Response;
 
 use App\Validators\Orders\SaveOrderValidator;
+use App\Validators\Orders\UpdateOrderStatusValidator;
 
 use App\Services\OrderService;
 
@@ -36,7 +37,10 @@ class OrderController extends \Phalcon\Mvc\Controller
     {
         $order = $this->orderService->find($id);
 
-        return $this->successResponse(['order' => $order],
+        $orderArray = $order->toArray();
+        $orderArray['items'] = $order->items ? $order->items->toArray() : [];
+
+        return $this->successResponse(['order' => $orderArray],
             'Order fetched successfully',
             200
         );
@@ -51,23 +55,41 @@ class OrderController extends \Phalcon\Mvc\Controller
 
         $order = $this->orderService->create($requestData);
 
+        $orderArray = $order->toArray();
+        $orderArray['items'] = $order->items ? $order->items->toArray() : [];
+
         return $this->successResponse(
-            ['order' => $order],
+            $orderArray,
             'Order created successfully',
             201
         );
     }
 
-    public function cancelAction(int $id): Response
+    public function updateStatusAction(int $id): Response
     {
-        $order = $this->orderService->cancel($id);
+        $requestData = $this->request->getJsonRawBody(true);
+
+        $validator = new UpdateOrderStatusValidator();
+        $validator->validateData($requestData);
+
+        $this->orderService->updateStatus($id, $requestData['shipping_status']);
 
         return $this->successResponse(
-            ['order' => $order],
-            'Order cancelled successfully',
+            null,
+            'Order status updated successfully',
             200
         );
     }
 
+    public function cancelAction(int $id): Response
+    {
+        $this->orderService->cancel($id);
+
+        return $this->successResponse(
+            null,
+            'Order cancelled successfully',
+            200
+        );
+    }
 }
 

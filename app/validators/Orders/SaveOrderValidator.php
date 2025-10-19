@@ -9,6 +9,9 @@ use Phalcon\Filter\Validation\Validator\Uniqueness;
 use Phalcon\Filter\Validation\Validator\StringLength\Max;
 use Phalcon\Filter\Validation\Validator\Numericality;
 use Phalcon\Filter\Validation\Validator\InclusionIn;
+use Phalcon\Filter\Validation\Validator\Callback;
+
+use Phalcon\Messages\Message;
 
 use App\Models\Orders;
 
@@ -110,6 +113,59 @@ class SaveOrderValidator extends BaseValidator
             new Max([
                 'max' => 1000,
                 'message' => 'Notes must not exceed 1000 characters',
+            ])
+        );
+
+        $this->add(
+            'items',
+            new Callback([
+                'callback' => function ($data) {
+                    $itemsByIndex = [];
+
+                    foreach ($data as $key => $value) {
+                        if (strpos($key, 'items.') === 0) {
+                            $parts = explode('.', $key);
+                            if (count($parts) >= 3) {
+                                $index = $parts[1];
+                                $field = $parts[2];
+                                if (!isset($itemsByIndex[$index])) {
+                                    $itemsByIndex[$index] = [];
+                                }
+                                $itemsByIndex[$index][$field] = $value;
+                            }
+                        }
+                    }
+
+                    $hasErrors = false;
+
+                    if (empty($itemsByIndex)) {
+                        $this->appendMessage(new Message('At least one item is required', 'items'));
+                        return false;
+                    }
+
+                    foreach ($itemsByIndex as $index => $item) {
+                        if (!isset($item['product_id']) || $item['product_id'] === '' || $item['product_id'] === null) {
+                            $this->appendMessage(new Message('Product ID is required', "items.{$index}.product_id"));
+                            $hasErrors = true;
+                        } elseif (!is_numeric($item['product_id'])) {
+                            $this->appendMessage(new Message('Product ID must be a numeric value', "items.{$index}.product_id"));
+                            $hasErrors = true;
+                        }
+
+                        if (!isset($item['quantity']) || $item['quantity'] === '' || $item['quantity'] === null) {
+                            $this->appendMessage(new Message('Quantity is required', "items.{$index}.quantity"));
+                            $hasErrors = true;
+                        } elseif (!is_numeric($item['quantity'])) {
+                            $this->appendMessage(new Message('Quantity must be a numeric value', "items.{$index}.quantity"));
+                            $hasErrors = true;
+                        } elseif ((float) $item['quantity'] < 1) {
+                            $this->appendMessage(new Message('Quantity must be at least 1', "items.{$index}.quantity"));
+                            $hasErrors = true;
+                        }
+                    }
+
+                    return !$hasErrors;
+                }
             ])
         );
     }

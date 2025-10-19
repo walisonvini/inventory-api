@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\Orders;
+use App\Models\OrderItems;
 use App\Models\ClientAddresses;
+use App\Models\Products;
 
 use App\Exceptions\ModelNotFoundException;
 
@@ -11,7 +13,16 @@ class OrderService
 {
     public function all(): array
     {
-        return Orders::find()->toArray();
+        $result = [];
+        $orders = Orders::find();
+
+        foreach ($orders as $order) {
+            $orderArr = $order->toArray();
+            $orderArr['items'] = $order->items ? $order->items->toArray() : [];
+            $result[] = $orderArr;
+        }
+
+        return $result;
     }
 
     public function find(int $id): Orders
@@ -34,6 +45,8 @@ class OrderService
     {
         $this->validateAddressForClient($data['client_id'], $data['address_id']);
         
+        $this->validateStock($data['items']);
+        
         $order = new Orders();
         $order->assign($data, [
             'client_id',
@@ -50,6 +63,19 @@ class OrderService
 
         $order->refresh();
 
+        $this->saveOrderItems($order->id, $data['items']);
+
+        return $order;
+    }
+
+    public function updateStatus(int $id, string $status): Orders
+    {
+        $order = $this->find($id);
+        
+        $order->shipping_status = $status;
+        $order->save();
+        $order->refresh();
+        
         return $order;
     }
 
@@ -66,6 +92,43 @@ class OrderService
         $order->refresh();
         
         return $order;
+    }
+
+    private function validateStock(array $items): void
+    {
+        foreach ($items as $item) {
+            $product = Products::findFirst([
+                'conditions' => 'id = :id:',
+                'bind' => ['id' => $item['product_id']]
+            ]);
+
+            if (!$product) {
+                throw new ModelNotFoundException("Product with ID {$item['product_id']} not found");
+            }
+
+            if ($product->stock < $item['quantity']) {
+                throw new \Exception("Insufficient stock for product_id {$product->id}. Available: {$product->stock}, Requested: {$item['quantity']}", 422);
+            }
+        }
+    }
+
+    private function saveOrderItems(int $orderId, array $items): void
+    {
+        foreach ($items as $item) {
+            $product = Products::findFirst([
+                'conditions' => 'id = :id:',
+                'bind' => ['id' => $item['product_id']]
+            ]);
+
+            $orderItem = new OrderItems();
+            $orderItem->order_id = $orderId;
+            $orderItem->product_id = $item['product_id'];
+            $orderItem->quantity = $item['quantity'];
+            $orderItem->save();
+
+            $product->stock -= $item['quantity'];
+            $product->save();
+        }
     }
 
     private function validateAddressForClient(int $clientId, int $addressId): void

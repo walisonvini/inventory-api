@@ -19,3 +19,8 @@ $apiGroup->addPatch('/orders/{id:[0-9]+}/cancel', [
     'controller' => 'App\Controllers\Order',
     'action' => 'cancel'
 ]);
+
+$apiGroup->addPatch('/orders/{id:[0-9]+}/update-status', [
+    'controller' => 'App\Controllers\Order',
+    'action' => 'updateStatus'
+]);

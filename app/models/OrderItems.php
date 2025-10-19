@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-class Orders extends \Phalcon\Mvc\Model
+class OrderItems extends \Phalcon\Mvc\Model
 {
 
     /**
@@ -16,55 +16,19 @@ class Orders extends \Phalcon\Mvc\Model
      *
      * @var integer
      */
-    public $client_id;
+    public $order_id;
 
     /**
      *
      * @var integer
      */
-    public $address_id;
+    public $product_id;
 
     /**
      *
-     * @var string
+     * @var integer
      */
-    public $order_code;
-
-    /**
-     *
-     * @var string
-     */
-    public $carrier;
-
-    /**
-     *
-     * @var string
-     */
-    public $tracking_code;
-
-    /**
-     *
-     * @var string
-     */
-    public $shipping_status;
-
-    /**
-     *
-     * @var double
-     */
-    public $total_weight;
-
-    /**
-     *
-     * @var double
-     */
-    public $total_volume;
-
-    /**
-     *
-     * @var string
-     */
-    public $notes;
+    public $quantity;
 
     /**
      *
@@ -84,27 +48,20 @@ class Orders extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->setSchema("inventory");
-        $this->setSource("orders");
+        $this->setSource("order_items");
 
         $this->belongsTo(
-            'client_id', 
-            \App\Models\Clients::class, 
+            'order_id', 
+            \App\Models\Orders::class,
             'id', 
-            ['alias' => 'client']
+            ['alias' => 'order']
         );
 
         $this->belongsTo(
-            'address_id', 
-            ClientAddresses::class,
+            'product_id', 
+            \App\Models\Products::class,
             'id', 
-            ['alias' => 'address']
-        );
-
-        $this->hasMany(
-            'id',
-            \App\Models\OrderItems::class,
-            'order_id',
-            ['alias' => 'items']
+            ['alias' => 'product']
         );
     }
 
@@ -112,7 +69,7 @@ class Orders extends \Phalcon\Mvc\Model
      * Allows to query a set of records that match the specified conditions
      *
      * @param mixed $parameters
-     * @return Orders[]|Orders|\Phalcon\Mvc\Model\ResultSetInterface
+     * @return OrderItems[]|OrderItems|\Phalcon\Mvc\Model\ResultSetInterface
      */
     public static function find($parameters = null): \Phalcon\Mvc\Model\ResultsetInterface
     {
@@ -123,7 +80,7 @@ class Orders extends \Phalcon\Mvc\Model
      * Allows to query the first record that match the specified conditions
      *
      * @param mixed $parameters
-     * @return Orders|\Phalcon\Mvc\Model\ResultInterface|\Phalcon\Mvc\ModelInterface|null
+     * @return OrderItems|\Phalcon\Mvc\Model\ResultInterface|\Phalcon\Mvc\ModelInterface|null
      */
     public static function findFirst($parameters = null): ?\Phalcon\Mvc\ModelInterface
     {
