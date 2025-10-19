@@ -51,10 +51,16 @@ try {
     echo $application->handle($_SERVER['REQUEST_URI'])->getContent();
 } catch (ValidatorException $e) {
     $errors = json_decode($e->getMessage(), true);
-    echo (new class { use ApiResponse; })->errorResponse('Validation failed', $e->getCode(), $errors)->getContent();
+    $response = (new class { use ApiResponse; })->errorResponse('Validation failed', $e->getCode(), $errors);
+    http_response_code($e->getCode());
+    echo $response->getContent();
 } catch (ModelNotFoundException $e) {
-    echo (new class { use ApiResponse; })->errorResponse($e->getMessage(), $e->getCode())->getContent();
+    $response = (new class { use ApiResponse; })->errorResponse($e->getMessage(), $e->getCode());
+    http_response_code($e->getCode());
+    echo $response->getContent();
 } catch (\Exception $e) {
-    echo $e->getMessage() . '<br>';
-    echo '<pre>' . $e->getTraceAsString() . '</pre>';
+    $code = $e->getCode() > 0 ? $e->getCode() : 500;
+    $response = (new class { use ApiResponse; })->errorResponse($e->getMessage(), $code);
+    http_response_code($code);
+    echo $response->getContent();
 }

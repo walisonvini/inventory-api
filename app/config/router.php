@@ -11,6 +11,7 @@ $apiGroup->setPrefix('/api');
 include __DIR__ . '/../routes/products.php';
 include __DIR__ . '/../routes/clients.php';
 include __DIR__ . '/../routes/client-address.php';
+include __DIR__ . '/../routes/orders.php';
 
 $router->mount($apiGroup);
 
